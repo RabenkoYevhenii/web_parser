@@ -56,7 +56,7 @@ if __name__ == "__main__":
         target_url = sys.argv[1]
     else:
         # Default example URL
-        target_url = "https://fieraroma-2025.expofp.com/"
+        target_url = "https://sigmasouthasia2025.expofp.com/"
         print(f"No URL provided, using: {target_url}")
     
     # Run the scraper

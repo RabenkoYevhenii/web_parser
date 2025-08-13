@@ -466,6 +466,16 @@ class UniversalCompanyScraper:
                     except:
                         continue
 
+            # Extract page title for comparison
+            page_title = None
+            try:
+                page_title = await page.title()
+                if page_title:
+                    page_title = page_title.strip()
+                print(f"Page Title: {page_title}")
+            except:
+                pass
+
             # Extract description
             for selector in helpers.description_selectors:
                 if await page.locator(selector).count() > 0:
@@ -479,7 +489,53 @@ class UniversalCompanyScraper:
                                 selector
                             ).first.inner_text()
                         if description and len(description.strip()) > 10:
-                            company_data["description"] = description.strip()
+                            description = description.strip()
+
+                            # Check if description is related to page title
+                            if page_title:
+                                page_title_lower = page_title.lower()
+                                description_lower = description.lower()
+
+                                # Skip if description is exactly the same as page title
+                                if description_lower == page_title_lower:
+                                    print(
+                                        f"Skipping description - exact match with page title"
+                                    )
+                                    continue
+
+                                # Skip if description is a substantial part of the page title
+                                # (more than 70% of description is contained in title)
+                                if (
+                                    len(description) > 20
+                                    and description_lower in page_title_lower
+                                    and len(description) / len(page_title)
+                                    > 0.4
+                                ):
+                                    print(
+                                        f"Skipping description - substantial part of page title"
+                                    )
+                                    continue
+
+                                # Skip if page title is mostly contained in description
+                                # (useful for when description contains the full title plus more)
+                                words_in_title = set(page_title_lower.split())
+                                words_in_desc = set(description_lower.split())
+                                if (
+                                    len(words_in_title) > 3
+                                ):  # Only check if title has enough words
+                                    common_words = words_in_title.intersection(
+                                        words_in_desc
+                                    )
+                                    if (
+                                        len(common_words) / len(words_in_title)
+                                        > 0.7
+                                    ):
+                                        print(
+                                            f"Skipping description - contains most page title words"
+                                        )
+                                        continue
+
+                            company_data["description"] = description
                             break
                     except:
                         continue

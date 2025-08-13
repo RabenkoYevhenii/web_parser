@@ -195,11 +195,10 @@ class Helpers:
         ".vendor-details p",
         "p.description",
         "div.description p",
-        ".content p:first-of-type",
-        "article p:first-of-type",
+        # Removed broad selectors that might capture titles:
+        # ".content p:first-of-type",
+        # "article p:first-of-type",
     ]
-
-
 
     phone_selectors = [
         'a[href^="tel:"]',
