@@ -458,7 +458,7 @@ class UniversalCompanyScraper:
                         logo_url = await page.locator(
                             selector
                         ).first.get_attribute("src")
-                        if logo_url:
+                        if logo_url and "expofp-overlay" not in logo_url:
                             company_data["logo_url"] = self.normalize_url(
                                 logo_url
                             )
@@ -472,7 +472,6 @@ class UniversalCompanyScraper:
                 page_title = await page.title()
                 if page_title:
                     page_title = page_title.strip()
-                print(f"Page Title: {page_title}")
             except:
                 pass
 
